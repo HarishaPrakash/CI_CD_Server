@@ -1,0 +1,91 @@
+# vim: ts=2
+---
+- hosts: all
+  remote_user: vagrant
+  become: yes
+  become_method: sudo
+    
+  
+  vars:
+    vHome: /home/vagrant
+    mysql_root_password: 'devops@2022'
+    ansible_python_interpreter: /usr/bin/python3
+    db_user_root : root
+    db_user: devops
+    db_pass: devops@2022
+    db_name: devops
+    path_to_my_sql_files: /vagrant_scripts
+    
+  tasks:
+    - name: Installing Mysql  and dependencies
+      package:
+       name: "{{item}}"
+       state: present
+       update_cache: yes
+      loop:
+       - mysql-server
+       - mysql-client 
+       - python3-mysqldb
+       - libmysqlclient-dev
+      become: yes
+    - name: start and enable mysql service
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+    
+    - name: Ensure root user can only login from localhost
+      mysql_user:
+        login_password: "{{ mysql_root_password }}"
+        check_implicit_admin: yes
+        priv: "*.*:ALL,GRANT"
+        name: root
+        host: "{{ item }}"
+        password: "{{ mysql_root_password }}"
+        state: present
+      with_items:
+        - localhost
+        - 127.0.0.1
+        - ::1
+    
+    - name: Remove anonymous users
+      command: |
+        mysql -p{{ mysql_root_password }} -ne "{{ item }}"
+      with_items:
+        - DELETE FROM mysql.user WHERE User=''
+      changed_when: False
+
+    - name: Reload privilege tables
+      command: |
+        mysql -p{{ mysql_root_password }} -ne "{{ item }}"
+      with_items:
+        - FLUSH PRIVILEGES
+      changed_when: False
+    
+    - name: Run SQL commands against DB to create table
+      mysql_db:
+        login_host: "localhost"
+        login_password: "{{ mysql_root_password }}"
+        login_user: "{{ db_user_root }}"
+        login_port: "{{ 1 }}"
+        name: "{{ db_name }}"
+        state: import
+        target: "{{ path_to_my_sql_files }}/create_table.sql"
+    
+    - name: creating mysql user- devops
+      command: |
+        mysql -p{{ mysql_root_password }} -ne "{{ item }}"
+      with_items:
+        - CREATE DATABASE IF NOT EXISTS devops;
+        - CREATE USER '{{ db_user }}'@'localhost' IDENTIFIED BY 'devops@2022';
+        - GRANT ALL PRIVILEGES ON devops.* TO 'devops'@'localhost';
+        - FLUSH PRIVILEGES;
+      changed_when: False
+
+    - name: add settings to mysql file
+      lineinfile:
+        dest: /vagrant_scripts
+        line: "{{ item }}"
+      with_items:
+        - 'innodb_buffer_pool_size = 4096M'
+        - 'innodb_buffer_pool_instances = 4'
