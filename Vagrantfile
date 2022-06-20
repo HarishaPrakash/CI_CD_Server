@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # NOTE: This will enable public access to the opened port
   # config.vm.network "forwarded_port", guest: 80, host: 8080
-  config.vm.network "forwarded_port", guest: 8088, host: 1234
+  config.vm.network "forwarded_port", guest: 8088, host: 8089
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
@@ -71,11 +71,13 @@ Vagrant.configure("2") do |config|
   
   #config.vm.provision "file", source: "~/.ssh/id_rsa_devops_course.pub", destination: "~/.ssh/me.pub"
   #config.vm.provision "shell", inline: "cat ~vagrant/.ssh/me.pub >> ~vagrant/.ssh/authorized_keys"
+  #sudo add-apt-repository ppa:openjdk-r/ppa -y
+  #sudo apt install openjdk-11-jdk -y
   
   config.vm.provision "shell", inline: <<-SHELL
      	sudo apt-get update
-     	sudo apt-get install --yes python
-        #sudo apt-get install --yes dnf
+     	sudo apt-get install python3-pip -y
+       sudo apt install python3-dev -y
 
    	SHELL
    

@@ -1,1 +1,1 @@
-{"virtualbox":{"/vagrant_scripts":{"guestpath":"/vagrant_scripts","hostpath":"/home/harish/Documents/CI_CD_Server/scripts","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"/home/harish/Documents/CI_CD_Server","disabled":false,"__vagrantfile":true}}}
+{"virtualbox":{"/vagrant_scripts":{"guestpath":"/vagrant_scripts","hostpath":"/Users/pharisha/Documents/CI_CD_Server/scripts","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"/Users/pharisha/Documents/CI_CD_Server","disabled":false,"__vagrantfile":true}}}
