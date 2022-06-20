@@ -15,9 +15,7 @@
     db_pass: devops@2022
     db_name: devops
     path_to_my_sql_files: /vagrant_scripts
-    sonar_db_user: sonar
-    sonar_db_password: 
-
+    
   tasks:
     - name: Installing Mysql  and dependencies
       package:
@@ -91,13 +89,3 @@
       with_items:
         - 'innodb_buffer_pool_size = 4096M'
         - 'innodb_buffer_pool_instances = 4'
-    
-    
-    - name: creating mysql user- devops
-      command: |
-        mysql -p{{ mysql_root_password }} -ne "{{ item }}"
-      with_items:
-        - CREATE USER '{{ sonar_db_user }}'@'localhost' IDENTIFIED BY 'sonar';
-        - CREATE DATABASE sonar OWNER sonar;
-        - FLUSH PRIVILEGES;
-      changed_when: False
